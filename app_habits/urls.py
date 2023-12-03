@@ -5,5 +5,5 @@ from app_habits.apps import AppHabitsConfig
 name = AppHabitsConfig.name
 
 urlpatterns = [
-    path('token/', ....as_view(), name="list"),
+    # path('token/', .as_view(), name="list"),
 ]
