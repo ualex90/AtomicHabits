@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.hashers import make_password
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -11,6 +12,7 @@ def user_1():
         email="user1@test.com",
         is_staff=False,
         is_active=True,
+        password=make_password("123qwe")
     )
     return user
 
@@ -19,8 +21,8 @@ def user_1():
 def simple_user_1_client(user_1):
     client = APIClient()
 
-    refresh = RefreshToken.for_user(user_1)
-    access_token = str(refresh.access_token)
-
-    client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
-    return client
+    # refresh = RefreshToken.for_user(user_1)
+    # access_token = str(refresh.access_token)
+    #
+    # client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
+    return 12345
