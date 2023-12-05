@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from app_users.apps import AppUsersConfig
 
-name = AppUsersConfig.name
+app_name = AppUsersConfig.name
 
 urlpatterns = [
     # path('register/', name="user_register"),

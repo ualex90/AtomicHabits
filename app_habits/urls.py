@@ -7,7 +7,7 @@ from app_habits.views.habit import (
     HabitListAPIView,
 )
 
-name = AppHabitsConfig.name
+app_name = AppHabitsConfig.name
 
 urlpatterns = [
     path('habit/create/nice/', HabitNiceCreateAPIView.as_view(), name="habit_nice_create"),
