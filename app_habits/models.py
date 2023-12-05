@@ -5,6 +5,8 @@ from config import settings
 
 
 class Periodicity(models.TextChoices):
+    """ Период выполнения привычки """
+
     DAY_1 = 1, '1 День'
     DAY_2 = 2, '2 Дня'
     DAY_3 = 3, '3 Дня'
@@ -15,6 +17,11 @@ class Periodicity(models.TextChoices):
 
 
 class Habit(models.Model):
+    """
+    Модель "привычка".
+    Модель универсальная.
+    На ее основе создается как полезная, так и приятная привычка
+    """
     #
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
