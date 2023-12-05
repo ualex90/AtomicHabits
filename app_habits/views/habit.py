@@ -17,9 +17,24 @@ from app_habits.serializers.habit import (
 class HabitNiceCreateAPIView(CreateAPIView):
     serializer_class = HabitNiceCreateSerializer
 
+    def perform_create(self, serializer):
+        new_habit = serializer.save()
+
+        new_habit.owner = self.request.user  # Добавляем пользователя
+        new_habit.is_nice_habit = True  # Устанавливаем признак приятной привычки
+
+        new_habit.save()
+
 
 class HabitGoodCreateAPIView(CreateAPIView):
     serializer_class = HabitGoodCreateSerializer
+
+    def perform_create(self, serializer):
+        new_habit = serializer.save()
+
+        new_habit.owner = self.request.user  # Добавляем пользователя
+
+        new_habit.save()
 
 
 class HabitListAPIView(ListAPIView):

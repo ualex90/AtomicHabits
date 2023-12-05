@@ -39,6 +39,7 @@ class Habit(models.Model):
     )
     # Признак приятной привычки
     is_nice_habit = models.BooleanField(
+        default=False,
         verbose_name=_('Is nice habit')
     )
     # Привязка приятной привычки, только ДЛЯ ПОЛЕЗНОЙ привычки
