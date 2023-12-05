@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from app_habits.models import Habit
+from validators.general_validators import FillingNotOutTwoFieldsValidator
 
 
 class HabitSerializer(serializers.ModelSerializer):
@@ -22,7 +23,10 @@ class HabitGoodCreateSerializer(serializers.ModelSerializer):
         model = Habit
         fields = "__all__"
         read_only_fields = ('owner', 'is_nice_habit')
-        validators = []
+        validators = [
+            # Проверяем что одновременно не указаны связанная привычка и вознаграждение
+            FillingNotOutTwoFieldsValidator('related_habit', 'reward')
+        ]
 
 
 class HabitListSerializer(serializers.ModelSerializer):
