@@ -15,7 +15,7 @@ from app_habits.serializers.habit import (
 
 
 class HabitNiceCreateAPIView(CreateAPIView):
-    """ Create a new nice habit """
+    """ Создание приятной привычки """
 
     serializer_class = HabitNiceCreateSerializer
 
@@ -29,7 +29,7 @@ class HabitNiceCreateAPIView(CreateAPIView):
 
 
 class HabitGoodCreateAPIView(CreateAPIView):
-    """ Create a new nice habit """
+    """ Создание полезной привычки """
 
     serializer_class = HabitGoodCreateSerializer
 
