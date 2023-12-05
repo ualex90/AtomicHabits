@@ -2,74 +2,73 @@ from django.db import models
 
 from app_users.models import NULLABLE
 from config import settings
-from django.utils.translation import gettext_lazy as _
 
 
 class Periodicity(models.TextChoices):
-    DAY_1 = 1, _('1 Day')
-    DAY_2 = 2, _('2 Day')
-    DAY_3 = 3, _('3 Day')
-    DAY_4 = 4, _('4 Day')
-    DAY_5 = 5, _('5 Day')
-    DAY_6 = 6, _('6 Day')
-    DAY_7 = 7, _('7 Day')
+    DAY_1 = 1, '1 День'
+    DAY_2 = 2, '2 Дня'
+    DAY_3 = 3, '3 Дня'
+    DAY_4 = 4, '4 Дня'
+    DAY_5 = 5, '5 Дней'
+    DAY_6 = 6, '6 Дней'
+    DAY_7 = 7, '7 Дней'
 
 
 class Habit(models.Model):
-    # Создатель привычки
+    #
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        verbose_name=_('Owner'),
+        verbose_name='Создатель привычки',
         **NULLABLE
     )
-    # Действие привычки
+    #
     task = models.TextField(
-        verbose_name=_('Task')
+        verbose_name='Выполняемое действие'
     )
-    # Время начала выполнения. ДЛЯ ПОЛЕЗНОЙ привычки
+    # ДЛЯ ПОЛЕЗНОЙ привычки
     start_time = models.TimeField(
-        verbose_name=_('Time for task'),
+        verbose_name='Время начала выполнения',
         **NULLABLE
     )
-    # Место выполнения действия
+    #
     location = models.CharField(
         max_length=50,
-        verbose_name=_('Task location')
+        verbose_name='Место выполнения действия'
     )
-    # Признак приятной привычки
+    #
     is_nice_habit = models.BooleanField(
         default=False,
-        verbose_name=_('Is nice habit')
+        verbose_name='Признак приятной привычки'
     )
-    # Привязка приятной привычки, только ДЛЯ ПОЛЕЗНОЙ привычки
+    # ДЛЯ ПОЛЕЗНОЙ привычки
     related_habit = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
-        verbose_name=_('Related nice habit'),
+        verbose_name='Привязка приятной привычки',
         **NULLABLE
     )
-    # Периодичность. Минимум - 1 день, максимум - 7 дней с шагом в 1 день ДЛЯ ПОЛЕЗНОЙ привычки
+    # ДЛЯ ПОЛЕЗНОЙ привычки. Минимум - 1 день, максимум - 7 дней с шагом в 1 день
     periodicity = models.CharField(
         default=Periodicity.DAY_1,
         max_length=2,
         choices=Periodicity.choices,
-        verbose_name=_('Periodicity'),
+        verbose_name='Периодичность',
         **NULLABLE
     )
-    # Вознаграждение ДЛЯ ПОЛЕЗНОЙ привычки
+    # ДЛЯ ПОЛЕЗНОЙ привычки
     reward = models.CharField(
         max_length=50,
-        verbose_name="Reward for tasks",
+        verbose_name="Вознаграждение",
         **NULLABLE
     )
-    # Продолжительность выполнения задачи (не более 120 секунд)
+    # Не более 120 секунд
     lead_time = models.SmallIntegerField(
         default=60,
-        verbose_name=_("Lead time")
+        verbose_name="Продолжительность выполнения задачи (секунд)"
     )
-    # Признак публичности. При установке привычку видят все пользователи.
+    # При установке привычку видят все пользователи.
     is_public = models.BooleanField(
         default=False,
-        verbose_name="Is public"
+        verbose_name="Признак публичности"
     )
