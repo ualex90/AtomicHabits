@@ -6,7 +6,7 @@ from rest_framework.generics import (
 )
 
 from app_habits.models import Habit
-from app_habits.paginators import HabitPaginator
+from app_habits.paginators.habit import HabitPaginator
 from app_habits.serializers.habit import (
     HabitGoodCreateSerializer,
     HabitNiceCreateSerializer,
