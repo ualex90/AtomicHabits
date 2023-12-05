@@ -1,4 +1,5 @@
 from django.urls import reverse
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from app_users.models import User
@@ -6,7 +7,7 @@ from app_users.models import User
 
 class HabitGoodTest(APITestCase):
 
-    def SetUp(self):
+    def setUp(self):
 
         # Users
         self.user_1 = User.objects.create(
@@ -34,7 +35,41 @@ class HabitGoodTest(APITestCase):
         self.user_3.save()
 
     def test_create(self):
+        """ Тестирование создания объекта с минимальным набором полей """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+        }
+
         response = self.client.post(
-            reverse("app_habits:habit_good_create")
+            reverse("app_habits:habit_good_create"),
+            data=data
         )
 
+        # Проверяем что объект успешно создан
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_201_CREATED
+        )
+
+        # Проверяем ответ
+        self.assertEquals(
+            response.json(),
+            {
+                "id": response.json().get("id"),
+                "task": "Test task good",
+                "start_time": None,
+                "location": "Test location",
+                "is_nice_habit": False,
+                "periodicity": "1",
+                "reward": None,
+                "time_to_complete": 60,
+                "is_public": False,
+                "owner": self.user_1.id,
+                "related_habit": None
+            }
+        )
