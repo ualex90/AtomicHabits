@@ -44,7 +44,7 @@ class Habit(models.Model):
         verbose_name='Место выполнения действия'
     )
     #
-    is_nice_habit = models.BooleanField(
+    is_nice = models.BooleanField(
         default=False,
         verbose_name='Признак приятной привычки'
     )
