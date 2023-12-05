@@ -42,9 +42,14 @@ class HabitGoodCreateAPIView(CreateAPIView):
 
 
 class HabitListAPIView(ListAPIView):
-    """ Get habit list"""
+    """
+    Получение списка привычек.
+    - Доступна фильтрация по признаку приятной привычки
+      is_nice_habit (true, false)
+    - Сортировка по любому доступному полю
+    """
 
-    queryset = Habit.objects.filter(is_nice_habit=True)
+    queryset = Habit.objects.all()
     serializer_class = HabitListSerializer
     filter_backends = [OrderingFilter, DjangoFilterBackend]
     ordering_fields = ('task', 'start_time', 'location', 'periodicity', 'is_nice_habit')
