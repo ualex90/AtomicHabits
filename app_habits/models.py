@@ -63,9 +63,9 @@ class Habit(models.Model):
         **NULLABLE
     )
     # Не более 120 секунд
-    lead_time = models.SmallIntegerField(
+    time_to_complete = models.SmallIntegerField(
         default=60,
-        verbose_name="Продолжительность выполнения задачи (секунд)"
+        verbose_name="Время на выполнение (секунд)"
     )
     # При установке привычку видят все пользователи.
     is_public = models.BooleanField(
