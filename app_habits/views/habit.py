@@ -15,6 +15,8 @@ from app_habits.serializers.habit import (
 
 
 class HabitNiceCreateAPIView(CreateAPIView):
+    """ Create a new nice habit """
+
     serializer_class = HabitNiceCreateSerializer
 
     def perform_create(self, serializer):
@@ -27,6 +29,8 @@ class HabitNiceCreateAPIView(CreateAPIView):
 
 
 class HabitGoodCreateAPIView(CreateAPIView):
+    """ Create a new nice habit """
+
     serializer_class = HabitGoodCreateSerializer
 
     def perform_create(self, serializer):
@@ -38,6 +42,8 @@ class HabitGoodCreateAPIView(CreateAPIView):
 
 
 class HabitListAPIView(ListAPIView):
+    """ Get habit list"""
+
     queryset = Habit.objects.filter(is_nice_habit=True)
     serializer_class = HabitListSerializer
     filter_backends = [OrderingFilter, DjangoFilterBackend]
