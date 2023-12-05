@@ -85,7 +85,7 @@ class HabitGoodTest(APITestCase):
 
     def test_filling_not_out_two_fields_validator(self):
         """
-        Тестирование валидатора FillingOutTwoFieldsValidator
+        Тестирование валидатора FillingNotOutTwoFieldsValidator
         при одновременном указании связанной привычки и вознаграждения
         """
 
@@ -114,4 +114,37 @@ class HabitGoodTest(APITestCase):
         self.assertEquals(
             response.json(),
             {'non_field_errors': ['Недопустимо одновременно указывать "related_habit" и "reward"']}
+        )
+
+    def test_time_to_complete_validator(self):
+        """
+        Тестирование валидатора TimeToCompleteValidator
+        при превышении значения времени выполнения (ограничено 120)
+        """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "related_habit": self.nice_habit.id,
+            "time_to_complete": 121
+        }
+
+        response = self.client.post(
+            reverse("app_habits:habit_good_create"),
+            data=data
+        )
+
+        # Проверяем что объект успешно создан
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # Проверяем текст ответа
+        self.assertEquals(
+            response.json(),
+            {'non_field_errors': ['Время выполнения задания не должно превышать 120 секунд']}
         )
