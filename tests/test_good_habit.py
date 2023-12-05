@@ -39,7 +39,7 @@ class HabitGoodTest(APITestCase):
         self.nice_habit = Habit.objects.create(
             task="Test nice habit",
             location="Test location",
-            is_nice_habit=True,
+            is_nice=True,
             owner=self.user_1
         )
 
@@ -73,7 +73,7 @@ class HabitGoodTest(APITestCase):
                 "task": "Test task good",
                 "start_time": None,
                 "location": "Test location",
-                "is_nice_habit": False,
+                "is_nice": False,
                 "periodicity": "1",
                 "reward": None,
                 "time_to_complete": 60,
@@ -104,7 +104,7 @@ class HabitGoodTest(APITestCase):
             data=data
         )
 
-        # Проверяем что объект успешно создан
+        # Проверяем что получили ошибку
         self.assertEquals(
             response.status_code,
             status.HTTP_400_BAD_REQUEST
@@ -137,7 +137,7 @@ class HabitGoodTest(APITestCase):
             data=data
         )
 
-        # Проверяем что объект успешно создан
+        # Проверяем что получили ошибку
         self.assertEquals(
             response.status_code,
             status.HTTP_400_BAD_REQUEST
@@ -147,4 +147,87 @@ class HabitGoodTest(APITestCase):
         self.assertEquals(
             response.json(),
             {'non_field_errors': ['Время выполнения задания не должно превышать 120 секунд']}
+        )
+
+    def test_related_habit_only_nice_validator(self):
+        """
+        Тестирование валидатора RelatedHabitOnlyNice
+        при указании привычки без признака приятной
+        """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        # Создаем полезную привычку
+        good_habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            owner=self.user_1
+        )
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "related_habit": good_habit.id,
+            "time_to_complete": 120
+        }
+
+        response = self.client.post(
+            reverse("app_habits:habit_good_create"),
+            data=data
+        )
+
+        # Проверяем что получили ошибку
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # Проверяем текст ответа
+        self.assertEquals(
+            response.json(),
+            {'non_field_errors': ['В поле "related_habit" должна быть указана полезная привычка']}
+        )
+
+    def test_bad_periodicity(self):
+        """
+        Тестирование валидации ограничения на уровне модели.
+        Невозможность задания периодичности более 7 дней
+        """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        # Создаем полезную привычку
+        good_habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            owner=self.user_1
+        )
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "related_habit": good_habit.id,
+            "reward": "Test reward",
+            "periodicity": 8
+        }
+
+        response = self.client.post(
+            reverse("app_habits:habit_good_create"),
+            data=data
+        )
+
+        # Проверяем что получили ошибку
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # Проверяем текст ответа
+        self.assertEquals(
+            response.json(),
+            {'periodicity': ['Значения 8 нет среди допустимых вариантов.']}
         )

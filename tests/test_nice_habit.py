@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from app_habits.models import Habit
 from app_users.models import User
 
 
@@ -62,9 +63,103 @@ class HabitNiceTest(APITestCase):
                 "id": response.json().get("id"),
                 "task": "Test task nice",
                 "location": "Test location",
-                "is_nice_habit": True,
+                "is_nice": True,
                 "time_to_complete": 60,
                 "is_public": False,
                 "owner": self.user_1.id
             }
+        )
+
+    def test_time_to_complete_validator(self):
+        """
+        Тестирование валидатора TimeToCompleteValidator
+        при превышении значения времени выполнения (ограничено 120)
+        """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "time_to_complete": 121
+        }
+
+        response = self.client.post(
+            reverse("app_habits:habit_nice_create"),
+            data=data
+        )
+
+        # Проверяем что получили ошибку
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # Проверяем текст ответа
+        self.assertEquals(
+            response.json(),
+            {'non_field_errors': ['Время выполнения задания не должно превышать 120 секунд']}
+        )
+
+    def test_not_related(self):
+        """
+        Тестирование на уровне модели
+        Невозможность задания связанной привычки для полезной привычки
+        """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "related_habit": 1
+        }
+
+        response = self.client.post(
+            reverse("app_habits:habit_nice_create"),
+            data=data
+        )
+
+        # Проверяем что объект успешно создан
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_201_CREATED
+        )
+
+        # Проверяем что в поле related_habit отсутствуют данные
+        self.assertTrue(
+            not Habit.objects.get(pk=response.json().get("id")).related_habit
+        )
+
+    def test_not_reward(self):
+        """
+        Тестирование на уровне модели
+        Невозможность задания вознаграждения для полезной привычки
+        """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "reward": "Test reward"
+        }
+
+        response = self.client.post(
+            reverse("app_habits:habit_nice_create"),
+            data=data
+        )
+
+        # Проверяем что объект успешно создан
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_201_CREATED
+        )
+
+        # Проверяем что в поле reward отсутствуют данные
+        self.assertTrue(
+            not Habit.objects.get(pk=response.json().get("id")).reward
         )
