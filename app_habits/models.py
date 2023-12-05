@@ -27,10 +27,10 @@ class Habit(models.Model):
     task = models.TextField(
         verbose_name=_('Task')
     )
-    # Время начала выполнения. По умолчанию 12:00
+    # Время начала выполнения. ДЛЯ ПОЛЕЗНОЙ привычки
     start_time = models.TimeField(
-        default="12:00",
-        verbose_name=_('Time for task')
+        verbose_name=_('Time for task'),
+        **NULLABLE
     )
     # Место выполнения действия
     location = models.CharField(
@@ -48,12 +48,13 @@ class Habit(models.Model):
         verbose_name=_('Related nice habit'),
         **NULLABLE
     )
-    # Периодичность. Минимум - 1 день, максимум - 7 дней с шагом в 1 день
+    # Периодичность. Минимум - 1 день, максимум - 7 дней с шагом в 1 день ДЛЯ ПОЛЕЗНОЙ привычки
     periodicity = models.CharField(
         default=Periodicity.DAY_1,
         max_length=2,
         choices=Periodicity.choices,
-        verbose_name=_('Periodicity')
+        verbose_name=_('Periodicity'),
+        **NULLABLE
     )
     # Вознаграждение ДЛЯ ПОЛЕЗНОЙ привычки
     reward = models.CharField(
