@@ -49,6 +49,7 @@ class HabitListAPIView(ListAPIView):
     - Доступна фильтрация по признаку приятной привычки
       is_nice (true, false)
     - Сортировка по любому доступному полю
+      (для админа, дополнительно owner_email)
     """
 
     filter_backends = [OrderingFilter, DjangoFilterBackend]
@@ -88,13 +89,9 @@ class HabitPublicListAPIView(ListAPIView):
     """
 
     queryset = Habit.objects.filter(is_public=True)
+    serializer_class = HabitListAllSerializer
     filter_backends = [OrderingFilter, DjangoFilterBackend]
-    ordering_fields = None
+    ordering_fields = ('id', 'task', 'start_time', 'location', 'periodicity', 'is_nice', 'owner_email', )
     filterset_fields = ('is_nice', )
     pagination_class = HabitPaginator
 
-    def get_serializer_class(self):
-        serializer_class = HabitListAllSerializer
-        self.ordering_fields = ('id', 'task', 'start_time', 'location', 'periodicity', 'is_nice', 'owner_email', )
-
-        return serializer_class
