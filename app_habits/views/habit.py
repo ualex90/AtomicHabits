@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
@@ -11,6 +12,7 @@ from app_habits.serializers.habit import (
     HabitGoodCreateSerializer,
     HabitNiceCreateSerializer,
     HabitListSerializer,
+    HabitListAllSerializer,
 )
 
 
@@ -45,13 +47,58 @@ class HabitListAPIView(ListAPIView):
     """
     Получение списка привычек.
     - Доступна фильтрация по признаку приятной привычки
-      is_nice (true, false)
+      is_nice (true, false) для обычного пользователя
+      и дополнительно 'owner_email' для модератора
     - Сортировка по любому доступному полю
     """
 
-    queryset = Habit.objects.all()
-    serializer_class = HabitListSerializer
     filter_backends = [OrderingFilter, DjangoFilterBackend]
-    ordering_fields = ('task', 'start_time', 'location', 'periodicity', 'is_nice')
-    filterset_fields = ('is_nice',)
+    ordering_fields = None
+    filterset_fields = None
     pagination_class = HabitPaginator
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            queryset = Habit.objects.all()
+        else:
+            queryset = Habit.objects.filter(owner=self.request.user)
+
+        if isinstance(queryset, QuerySet):
+            # Ensure queryset is re-evaluated on each request.
+            queryset = queryset.all()
+
+        return queryset
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            serializer_class = HabitListAllSerializer
+            self.ordering_fields = ('id', 'task', 'start_time', 'location', 'periodicity', 'is_nice', 'owner_email', )
+            self.filterset_fields = ('is_nice', 'owner_email', )
+        else:
+            serializer_class = HabitListSerializer
+            self.ordering_fields = ('id', 'task', 'start_time', 'location', 'periodicity', 'is_nice', )
+            self.filterset_fields = ('is_nice', )
+
+        return serializer_class
+
+
+class HabitPublicListAPIView(ListAPIView):
+    """
+    Получение списка публичных привычек.
+    - Доступна фильтрация по признаку приятной привычки
+      is_nice (true, false) и 'owner_email'
+    - Сортировка по любому доступному полю
+    """
+
+    queryset = Habit.objects.filter(is_public=True)
+    filter_backends = [OrderingFilter, DjangoFilterBackend]
+    ordering_fields = None
+    filterset_fields = None
+    pagination_class = HabitPaginator
+
+    def get_serializer_class(self):
+        serializer_class = HabitListAllSerializer
+        self.ordering_fields = ('id', 'task', 'start_time', 'location', 'periodicity', 'is_nice', 'owner_email', )
+        self.filterset_fields = ('is_nice', 'owner_email', )
+
+        return serializer_class

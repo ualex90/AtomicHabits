@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from app_habits.models import Habit
+from app_users.models import User
 from validators.general_validators import FillingNotOutTwoFieldsValidator
 from app_habits.validators.habit import (
     TimeToCompleteValidator,
@@ -43,4 +44,17 @@ class HabitGoodCreateSerializer(serializers.ModelSerializer):
 class HabitListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habit
-        fields = ('task', 'start_time', 'location', 'periodicity', 'is_nice')
+        fields = ('id', 'task', 'start_time', 'location', 'periodicity', 'is_nice')
+
+
+class HabitListAllSerializer(serializers.ModelSerializer):
+    owner_email = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_owner_email(instance):
+        owner_email = instance.owner.email
+        return owner_email
+
+    class Meta:
+        model = Habit
+        fields = ('id', 'task', 'start_time', 'location', 'periodicity', 'is_nice', 'owner_email', )
