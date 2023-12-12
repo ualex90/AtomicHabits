@@ -163,3 +163,39 @@ class HabitNiceTest(APITestCase):
         self.assertTrue(
             not Habit.objects.get(pk=response.json().get("id")).reward
         )
+
+    def test_update(self):
+        """ Тестирование изменения """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        # Создаем приятную привычку
+        nice_habit = Habit.objects.create(
+            task="Test nice habit",
+            location="Test location",
+            is_nice=True,
+            owner=self.user_1
+        )
+
+        # Изменяем привычку
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': nice_habit.id}),
+            data={
+                'time_to_complete': 111,
+                'is_public': True,
+            }
+        )
+
+        self.assertEquals(
+            response.json(),
+            {
+                'id': nice_habit.id,
+                'task': 'Test nice habit',
+                'location': 'Test location',
+                'is_nice': True,
+                'time_to_complete': 111,
+                'is_public': True,
+                'owner': 1,
+            }
+        )

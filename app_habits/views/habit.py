@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
     CreateAPIView,
-    ListAPIView
+    ListAPIView, UpdateAPIView
 )
 
 from app_habits.models import Habit
@@ -95,3 +95,13 @@ class HabitPublicListAPIView(ListAPIView):
     filterset_fields = ('is_nice', )
     pagination_class = HabitPaginator
 
+
+class HabitUpdateAPIView(UpdateAPIView):
+    """ Изменение привычки """
+
+    queryset = Habit.objects.all()
+
+    def get_serializer_class(self):
+        if self.get_object().is_nice:
+            return HabitNiceCreateSerializer
+        return HabitGoodCreateSerializer

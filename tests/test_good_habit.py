@@ -9,7 +9,6 @@ from app_users.models import User
 class HabitGoodTest(APITestCase):
 
     def setUp(self):
-
         # Users
         self.user_1 = User.objects.create(
             email="user1@test.com",
@@ -230,4 +229,43 @@ class HabitGoodTest(APITestCase):
         self.assertEquals(
             response.json(),
             {'periodicity': ['Значения 8 нет среди допустимых вариантов.']}
+        )
+
+    def test_update(self):
+        """ Тестирование изменения """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        # Создаем полезную привычку
+        good_habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            owner=self.user_1
+        )
+
+        # Изменяем привычку
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': good_habit.id}),
+            data={
+                "related_habit": self.nice_habit.id,
+            }
+        )
+
+        self.assertEquals(
+            response.json(),
+            {
+                'id': good_habit.id,
+                'task': 'Test good habit',
+                'start_time': None,
+                'location': 'Test location',
+                'is_nice': False,
+                'periodicity': '1',
+                'reward': None,
+                'time_to_complete': 60,
+                'is_public': False,
+                'owner': 1,
+                'related_habit': self.nice_habit.id
+            }
         )

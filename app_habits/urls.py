@@ -4,7 +4,9 @@ from app_habits.apps import AppHabitsConfig
 from app_habits.views.habit import (
     HabitNiceCreateAPIView,
     HabitGoodCreateAPIView,
-    HabitListAPIView, HabitPublicListAPIView,
+    HabitListAPIView,
+    HabitPublicListAPIView,
+    HabitUpdateAPIView,
 )
 
 app_name = AppHabitsConfig.name
@@ -14,4 +16,5 @@ urlpatterns = [
     path('habit/create/good/', HabitGoodCreateAPIView.as_view(), name="habit_good_create"),
     path('habit/list/', HabitListAPIView.as_view(), name="habit_list"),
     path('habit/public_list/', HabitPublicListAPIView.as_view(), name="habit_public_list"),
+    path('habit/<int:pk>/update/', HabitUpdateAPIView.as_view(), name="habit_update")
 ]
