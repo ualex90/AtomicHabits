@@ -265,7 +265,7 @@ class HabitGoodTest(APITestCase):
                 'reward': None,
                 'time_to_complete': 60,
                 'is_public': False,
-                'owner': 1,
+                'owner': self.user_1.id,
                 'related_habit': self.nice_habit.id
             }
         )

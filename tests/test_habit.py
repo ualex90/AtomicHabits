@@ -227,3 +227,32 @@ class HabitTest(APITestCase):
                 ]
             }
         )
+
+    def test_destroy(self):
+        """ Тестирование удаления """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        # Создаем привычку
+        habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            owner=self.user_1
+        )
+
+        # считаем количество привычек в базе данных до удаления
+        count_habit_1 = Habit.objects.all().count()
+
+        # Изменяем привычку
+        response = self.client.delete(
+            reverse("app_habits:habit_destroy", kwargs={'pk': habit.id})
+        )
+
+        # считаем количество привычек в базе данных после удаления
+        count_habit_2 = Habit.objects.all().count()
+
+        self.assertTrue(
+            count_habit_1 - 1 == count_habit_2
+        )

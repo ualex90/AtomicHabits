@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
     CreateAPIView,
-    ListAPIView, UpdateAPIView
+    ListAPIView, UpdateAPIView, DestroyAPIView
 )
 
 from app_habits.models import Habit
@@ -12,7 +12,7 @@ from app_habits.serializers.habit import (
     HabitGoodCreateSerializer,
     HabitNiceCreateSerializer,
     HabitListSerializer,
-    HabitListAllSerializer,
+    HabitListAllSerializer, HabitSerializer,
 )
 
 
@@ -105,3 +105,10 @@ class HabitUpdateAPIView(UpdateAPIView):
         if self.get_object().is_nice:
             return HabitNiceCreateSerializer
         return HabitGoodCreateSerializer
+
+
+class HabitDestroyAPIView(DestroyAPIView):
+    """ Удаление привычки """
+
+    queryset = Habit.objects.all()
+    serializer_class = HabitSerializer

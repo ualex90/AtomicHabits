@@ -196,6 +196,7 @@ class HabitNiceTest(APITestCase):
                 'is_nice': True,
                 'time_to_complete': 111,
                 'is_public': True,
-                'owner': 1,
+                'owner': self.user_1.id,
             }
         )
+
