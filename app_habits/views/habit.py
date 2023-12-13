@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
     CreateAPIView,
-    ListAPIView, UpdateAPIView, DestroyAPIView
+    ListAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
 )
 
 from app_habits.models import Habit
@@ -78,6 +78,15 @@ class HabitListAPIView(ListAPIView):
             self.ordering_fields = ('id', 'task', 'start_time', 'location', 'periodicity', 'is_nice', )
 
         return serializer_class
+
+
+class HabitRetrieveAPIView(RetrieveAPIView):
+    """
+    Подробный просмотр привычки
+    """
+
+    queryset = Habit.objects.all()
+    serializer_class = HabitSerializer
 
 
 class HabitPublicListAPIView(ListAPIView):

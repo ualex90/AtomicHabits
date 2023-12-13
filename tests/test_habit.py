@@ -191,7 +191,6 @@ class HabitTest(APITestCase):
         )
 
     def test_public_list(self):
-
         # Аутентифицируем обычного пользователя
         self.client.force_authenticate(user=self.user_1)
 
@@ -225,6 +224,39 @@ class HabitTest(APITestCase):
                         'owner_email': 'user2@test.com'
                     }
                 ]
+            }
+        )
+
+    def test_retrieve(self):
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        # Создаем привычку
+        habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            owner=self.user_1
+        )
+
+        response = self.client.get(
+            reverse("app_habits:habit_retrieve", kwargs={'pk': habit.id})
+        )
+
+        self.assertEquals(
+            response.json(),
+            {
+                'id': habit.id,
+                'task': 'Test good habit',
+                'start_time': None,
+                'location': 'Test location',
+                'is_nice': False,
+                'periodicity': '1',
+                'reward': None,
+                'time_to_complete': 60,
+                'is_public': False,
+                'owner': self.user_1.id,
+                'related_habit': None
             }
         )
 
