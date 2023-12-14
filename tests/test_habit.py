@@ -259,6 +259,10 @@ class HabitTest(APITestCase):
         )
 
     def test_retrieve(self):
+        """
+        Подробный просмотр привычки создателем привычки
+        """
+
         # Аутентифицируем обычного пользователя
         self.client.force_authenticate(user=self.user_1)
 
@@ -291,7 +295,47 @@ class HabitTest(APITestCase):
             }
         )
 
+    def test_moderator_retrieve(self):
+        """
+        Подробный просмотр привычки модератором
+        """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.moderator)
+
+        # Создаем привычку
+        habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            owner=self.user_1
+        )
+
+        response = self.client.get(
+            reverse("app_habits:habit_retrieve", kwargs={'pk': habit.id})
+        )
+
+        self.assertEquals(
+            response.json(),
+            {
+                'id': habit.id,
+                'task': 'Test good habit',
+                'start_time': None,
+                'location': 'Test location',
+                'is_nice': False,
+                'periodicity': '1',
+                'reward': None,
+                'time_to_complete': 60,
+                'is_public': False,
+                'owner': self.user_1.id,
+                'related_habit': None
+            }
+        )
+
     def test_public_retrieve(self):
+        """
+        Подробный просмотр публичной привычки
+        """
 
         # Создаем привычку
         habit = Habit.objects.create(
@@ -324,6 +368,43 @@ class HabitTest(APITestCase):
                 'owner': self.user_1.id,
                 'related_habit': None
             }
+        )
+
+    def test_permission_anonim_retrieve(self):
+        """
+        Тестирование ограничений прав
+        доступа при просмотре непубличной
+        привычки без авторизации
+        """
+
+        response = self.client.delete(
+            reverse("app_habits:habit_destroy", kwargs={'pk': self.good_habit_1.id})
+        )
+
+        # Проверяем ошибку доступа
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED
+        )
+
+    def test_permission_other_user_retrieve(self):
+        """
+        Тестирование ограничений прав
+        доступа при просмотре непубличной
+        привычки другим пользователем
+        """
+
+        # Аутентифицируем обычного пользователя отличного от создателя привычки
+        self.client.force_authenticate(user=self.user_2)
+
+        response = self.client.delete(
+            reverse("app_habits:habit_destroy", kwargs={'pk': self.good_habit_1.id})
+        )
+
+        # Проверяем ошибку доступа
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN
         )
 
     def test_destroy(self):
