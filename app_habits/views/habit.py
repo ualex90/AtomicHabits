@@ -61,7 +61,8 @@ class HabitGoodCreateAPIView(CreateAPIView):
 
 class HabitListAPIView(ListAPIView):
     """
-    Получение списка привычек.
+    Получение списка привычек
+
     - Доступна фильтрация по признаку приятной привычки
       is_nice (true, false)
     - Сортировка по любому доступному полю
@@ -113,7 +114,8 @@ class HabitRetrieveAPIView(RetrieveAPIView):
 
 class HabitPublicListAPIView(ListAPIView):
     """
-    Получение списка публичных привычек.
+    Получение списка публичных привычек
+
     - Доступна фильтрация по признаку приятной привычки
       is_nice (true, false)
     - Сортировка по любому доступному полю.
