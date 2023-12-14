@@ -3,8 +3,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
     CreateAPIView,
-    ListAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
+    ListAPIView,
+    UpdateAPIView,
+    DestroyAPIView,
+    RetrieveAPIView
 )
+from rest_framework.permissions import IsAuthenticated
 
 from app_habits.models import Habit
 from app_habits.paginators.habit import HabitPaginator
@@ -12,14 +16,17 @@ from app_habits.serializers.habit import (
     HabitGoodCreateSerializer,
     HabitNiceCreateSerializer,
     HabitListSerializer,
-    HabitListAllSerializer, HabitSerializer,
+    HabitListAllSerializer,
+    HabitSerializer,
 )
+from app_users.permissions import IsModerator, IsOwner, IsPublic
 
 
 class HabitNiceCreateAPIView(CreateAPIView):
     """ Создание приятной привычки """
 
     serializer_class = HabitNiceCreateSerializer
+    permission_classes = [IsAuthenticated, ~IsModerator]
 
     def perform_create(self, serializer):
         new_habit = serializer.save()
@@ -34,6 +41,7 @@ class HabitGoodCreateAPIView(CreateAPIView):
     """ Создание полезной привычки """
 
     serializer_class = HabitGoodCreateSerializer
+    permission_classes = [IsAuthenticated, ~IsModerator]
 
     def perform_create(self, serializer):
         new_habit = serializer.save()
@@ -87,6 +95,7 @@ class HabitRetrieveAPIView(RetrieveAPIView):
 
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
+    permission_classes = [IsPublic | IsOwner | IsModerator]
 
 
 class HabitPublicListAPIView(ListAPIView):
@@ -109,6 +118,7 @@ class HabitUpdateAPIView(UpdateAPIView):
     """ Изменение привычки """
 
     queryset = Habit.objects.all()
+    permission_classes = [IsOwner | IsModerator]
 
     def get_serializer_class(self):
         if self.get_object().is_nice:
@@ -121,3 +131,4 @@ class HabitDestroyAPIView(DestroyAPIView):
 
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
+    permission_classes = [IsOwner]
