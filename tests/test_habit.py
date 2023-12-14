@@ -291,6 +291,41 @@ class HabitTest(APITestCase):
             }
         )
 
+    def test_public_retrieve(self):
+
+        # Создаем привычку
+        habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            is_public=True,
+            owner=self.user_1,
+        )
+
+        # Аутентифицируем другого пользователя
+        self.client.force_authenticate(user=self.user_2)
+
+        response = self.client.get(
+            reverse("app_habits:habit_retrieve", kwargs={'pk': habit.id})
+        )
+
+        self.assertEquals(
+            response.json(),
+            {
+                'id': habit.id,
+                'task': 'Test good habit',
+                'start_time': None,
+                'location': 'Test location',
+                'is_nice': False,
+                'periodicity': '1',
+                'reward': None,
+                'time_to_complete': 60,
+                'is_public': True,
+                'owner': self.user_1.id,
+                'related_habit': None
+            }
+        )
+
     def test_destroy(self):
         """ Тестирование удаления """
 
