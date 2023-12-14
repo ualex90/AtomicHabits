@@ -164,6 +164,28 @@ class HabitNiceTest(APITestCase):
             not Habit.objects.get(pk=response.json().get("id")).reward
         )
 
+    def test_permission_anonim_created(self):
+        """
+        Тестирование ограничение при создании
+        привычки без аутентификации
+        """
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "reward": "Test reward"
+        }
+
+        response = self.client.post(
+            reverse("app_habits:habit_nice_create"),
+            data=data
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED
+        )
+
     def test_update(self):
         """ Тестирование изменения """
 
@@ -200,3 +222,60 @@ class HabitNiceTest(APITestCase):
             }
         )
 
+    def test_permission_anonim_update(self):
+        """
+        Тестирование ограничение при изменении
+        привычки без аутентификации
+        """
+
+        nice_habit = Habit.objects.create(
+            task="Test nice habit",
+            location="Test location",
+            is_nice=True,
+            owner=self.user_1
+        )
+
+        # Изменяем привычку
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': nice_habit.id}),
+            data={
+                'time_to_complete': 111,
+                'is_public': True,
+            }
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED
+        )
+
+    def test_permission_other_user_update(self):
+        """
+        Тестирование ограничение при изменении
+        привычки без аутентификации
+        """
+
+        # Создаем полезную привычку
+        nice_habit = Habit.objects.create(
+            task="Test nice habit",
+            location="Test location",
+            is_nice=True,
+            owner=self.user_1
+        )
+
+        # Аутентифицируем другого пользователя
+        self.client.force_authenticate(user=self.user_2)
+
+        # Изменяем привычку
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': nice_habit.id}),
+            data={
+                'time_to_complete': 111,
+                'is_public': True,
+            }
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN
+        )

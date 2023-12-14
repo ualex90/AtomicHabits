@@ -1,4 +1,5 @@
 from django.urls import reverse
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from app_habits.models import Habit
@@ -190,6 +191,21 @@ class HabitTest(APITestCase):
             }
         )
 
+    def test_permission_anonim_list(self):
+        """
+        Тестирование ограничение при просмотре
+        привычки без аутентификации
+        """
+
+        response = self.client.get(
+            reverse("app_habits:habit_list")
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED
+        )
+
     def test_public_list(self):
         # Аутентифицируем обычного пользователя
         self.client.force_authenticate(user=self.user_1)
@@ -225,6 +241,21 @@ class HabitTest(APITestCase):
                     }
                 ]
             }
+        )
+
+    def test_permission_anonim_public_list(self):
+        """
+        Тестирование ограничение при просмотре
+        привычки без аутентификации
+        """
+
+        response = self.client.get(
+            reverse("app_habits:habit_public_list")
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED
         )
 
     def test_retrieve(self):
@@ -287,4 +318,59 @@ class HabitTest(APITestCase):
 
         self.assertTrue(
             count_habit_1 - 1 == count_habit_2
+        )
+
+    def test_permission_other_user_destroy(self):
+        """
+        Тестирование ограничений прав
+        доступа при удалении привычки
+        другим пользователем
+        """
+
+        # Аутентифицируем обычного пользователя отличного от создателя привычки
+        self.client.force_authenticate(user=self.user_2)
+
+        response = self.client.delete(
+            reverse("app_habits:habit_destroy", kwargs={'pk': self.good_habit_1.id})
+        )
+
+        # Проверяем ошибку доступа
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN
+        )
+
+    def test_permission_moderator_destroy(self):
+        """
+        Тестирование ограничений прав
+        доступа при удалении привычки
+        модератором
+        """
+
+        # Аутентифицируем модератора
+        self.client.force_authenticate(user=self.moderator)
+
+        response = self.client.delete(
+            reverse("app_habits:habit_destroy", kwargs={'pk': self.good_habit_1.id})
+        )
+
+        # Проверяем ошибку доступа
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN
+        )
+
+    def test_permission_anonim_destroy(self):
+        """
+        Тестирование ограничение при удалении
+        привычки без аутентификации
+        """
+
+        response = self.client.delete(
+            reverse("app_habits:habit_destroy", kwargs={'pk': self.good_habit_1.id})
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED
         )

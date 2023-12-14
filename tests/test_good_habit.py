@@ -82,6 +82,27 @@ class HabitGoodTest(APITestCase):
             }
         )
 
+    def test_permission_anonim_created(self):
+        """
+        Тестирование ограничение при создании
+        привычки без аутентификации
+        """
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+        }
+
+        response = self.client.post(
+            reverse("app_habits:habit_good_create"),
+            data=data
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED
+        )
+
     def test_filling_not_out_two_fields_validator(self):
         """
         Тестирование валидатора FillingNotOutTwoFieldsValidator
@@ -268,4 +289,69 @@ class HabitGoodTest(APITestCase):
                 'owner': self.user_1.id,
                 'related_habit': self.nice_habit.id
             }
+        )
+
+    def test_permission_anonim_update(self):
+        """
+        Тестирование ограничение при изменении
+        привычки без аутентификации
+        """
+
+        # Создаем полезную привычку
+        good_habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            owner=self.user_1
+        )
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+        }
+
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': good_habit.id}),
+            data={
+                "related_habit": self.nice_habit.id,
+            }
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED
+        )
+
+    def test_permission_other_user_update(self):
+        """
+        Тестирование ограничение при изменении
+        привычки без аутентификации
+        """
+
+        # Создаем полезную привычку
+        good_habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            owner=self.user_1
+        )
+
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+        }
+
+        # Аутентифицируем другого пользователя
+        self.client.force_authenticate(user=self.user_2)
+
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': good_habit.id}),
+            data={
+                "related_habit": self.nice_habit.id,
+            }
+        )
+
+        self.assertEquals(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN
         )
