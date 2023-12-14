@@ -23,7 +23,11 @@ from app_users.permissions import IsModerator, IsOwner, IsPublic
 
 
 class HabitNiceCreateAPIView(CreateAPIView):
-    """ Создание приятной привычки """
+    """
+    Создание приятной привычки
+
+    Создавать может любой авторизованный пользователь не являющийся модератором
+    """
 
     serializer_class = HabitNiceCreateSerializer
     permission_classes = [IsAuthenticated, ~IsModerator]
@@ -38,7 +42,11 @@ class HabitNiceCreateAPIView(CreateAPIView):
 
 
 class HabitGoodCreateAPIView(CreateAPIView):
-    """ Создание полезной привычки """
+    """
+    Создание полезной привычки
+
+    Создавать может любой авторизованный пользователь не являющийся модератором
+    """
 
     serializer_class = HabitGoodCreateSerializer
     permission_classes = [IsAuthenticated, ~IsModerator]
@@ -58,6 +66,9 @@ class HabitListAPIView(ListAPIView):
       is_nice (true, false)
     - Сортировка по любому доступному полю
       (для админа, дополнительно owner_email)
+
+    Просматривать пользователь может только свои привычки
+    Модератор просматривает все привычки с указанием создателя
     """
 
     filter_backends = [OrderingFilter, DjangoFilterBackend]
@@ -91,6 +102,8 @@ class HabitListAPIView(ListAPIView):
 class HabitRetrieveAPIView(RetrieveAPIView):
     """
     Подробный просмотр привычки
+
+    Просматривать разрешено создателю, модератору либо любому пользователю если привычка публичная
     """
 
     queryset = Habit.objects.all()
@@ -103,7 +116,9 @@ class HabitPublicListAPIView(ListAPIView):
     Получение списка публичных привычек.
     - Доступна фильтрация по признаку приятной привычки
       is_nice (true, false)
-    - Сортировка по любому доступному полю
+    - Сортировка по любому доступному полю.
+
+    Просматривать может любой авторизованный пользователь
     """
 
     queryset = Habit.objects.filter(is_public=True)
@@ -115,7 +130,11 @@ class HabitPublicListAPIView(ListAPIView):
 
 
 class HabitUpdateAPIView(UpdateAPIView):
-    """ Изменение привычки """
+    """
+    Изменение привычки
+
+    Изменять разрешено владельцу либо модератору
+    """
 
     queryset = Habit.objects.all()
     permission_classes = [IsOwner | IsModerator]
@@ -127,7 +146,11 @@ class HabitUpdateAPIView(UpdateAPIView):
 
 
 class HabitDestroyAPIView(DestroyAPIView):
-    """ Удаление привычки """
+    """
+    Удаление привычки
+
+    Удалять может только создатель
+    """
 
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
