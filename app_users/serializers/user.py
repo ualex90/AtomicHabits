@@ -8,7 +8,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     """
     Сериализатор регистрации нового пользователя
 
-    Выполняется проверка введения пароля
+    Выполняется проверка повторного введения пароля
     """
 
     password_again = serializers.CharField(
@@ -20,7 +20,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     def save(self, *args, **kwargs):
         # Создаём объект класса User
         user = User(
-            email=self.validated_data['email'],  # Назначаем Email
+            # Назначаем Email и при наличии first_name, last_name
+            email=self.validated_data['email'],
+            first_name=self.validated_data.get('first_name') if self.validated_data.get('first_name') else "",
+            last_name=self.validated_data.get('last_name') if self.validated_data.get('last_name') else "",
         )
         # Проверяем на валидность пароль
         password = self.validated_data['password']
