@@ -44,6 +44,7 @@ def add_task(habit: Habit):
                 'task': habit.task,
                 'location': habit.location,
                 'reward': habit.reward,
+                'time_to_complete': habit.time_to_complete,
             }, ensure_ascii=False
         ),
         start_time=datetime.combine(date.today(), habit.start_time),
@@ -51,8 +52,18 @@ def add_task(habit: Habit):
 
 
 def send_message_to_telegram(*args, **kwargs):
-    print(kwargs)
     chat_id = kwargs.get('telegram_id')
-    text = 'Message'
+    start_time = kwargs.get("start_time")
+    task = kwargs.get("task")
+    location = kwargs.get("location")
+    time_to_complete = kwargs.get("time_to_complete")
+
+    text = (
+        f'Привыкаем выполнять:\n'
+        f'Время - {start_time}\n'
+        f'Место - {location}\n'
+        f'Задача - {task}\n'
+        f'Время на выполнение - {time_to_complete} секунд'
+    )
     tg_bot = TgBot(chat_id)
     tg_bot.send_message(text)

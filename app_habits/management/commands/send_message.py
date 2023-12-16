@@ -7,4 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # print_task.delay()
-        send_message_tg.delay(telegram_id='361991641')
+        send_message_tg.delay(
+            telegram_id='361991641',
+            task="Test task"
+        )
