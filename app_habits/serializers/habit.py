@@ -26,6 +26,9 @@ class HabitNiceCreateSerializer(serializers.ModelSerializer):
 
 
 class HabitGoodCreateSerializer(serializers.ModelSerializer):
+    # Для полезной привычки, поле start_time является обязательным
+    start_time = serializers.TimeField()
+
     class Meta:
         model = Habit
         fields = "__all__"

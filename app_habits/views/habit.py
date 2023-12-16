@@ -19,6 +19,7 @@ from app_habits.serializers.habit import (
     HabitListAllSerializer,
     HabitSerializer,
 )
+from app_habits.services import add_task
 from app_users.permissions import IsModerator, IsOwner, IsPublic
 
 
@@ -29,6 +30,7 @@ class HabitNiceCreateAPIView(CreateAPIView):
     Создавать может любой авторизованный пользователь не являющийся модератором
     """
 
+    queryset = Habit.objects.all()
     serializer_class = HabitNiceCreateSerializer
     permission_classes = [IsAuthenticated, ~IsModerator]
 
@@ -47,7 +49,7 @@ class HabitGoodCreateAPIView(CreateAPIView):
 
     Создавать может любой авторизованный пользователь не являющийся модератором
     """
-
+    queryset = Habit.objects.all()
     serializer_class = HabitGoodCreateSerializer
     permission_classes = [IsAuthenticated, ~IsModerator]
 
@@ -57,6 +59,8 @@ class HabitGoodCreateAPIView(CreateAPIView):
         new_habit.owner = self.request.user  # Добавляем пользователя
 
         new_habit.save()
+
+        add_task(new_habit)  # Создаем периодическую задачу
 
 
 class HabitListAPIView(ListAPIView):

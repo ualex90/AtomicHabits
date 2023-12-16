@@ -60,7 +60,7 @@ class Habit(models.Model):
         default=Periodicity.DAY_1,
         max_length=2,
         choices=Periodicity.choices,
-        verbose_name='Периодичность',
+        verbose_name='Периодичность дней',
         **NULLABLE
     )
     # ДЛЯ ПОЛЕЗНОЙ привычки
@@ -70,7 +70,7 @@ class Habit(models.Model):
         **NULLABLE
     )
     # Не более 120 секунд
-    time_to_complete = models.SmallIntegerField(
+    time_to_complete = models.PositiveIntegerField(
         default=60,
         verbose_name="Время на выполнение (секунд)"
     )

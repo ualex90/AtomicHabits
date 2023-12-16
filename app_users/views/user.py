@@ -2,9 +2,10 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
 
 from app_users.models import User
-from app_users.serializers.user import RegisterUserSerializer
+from app_users.serializers.user import RegisterUserSerializer, RegisterUserResponseSerializer
 
 
 class RegisterUserAPIView(CreateAPIView):
@@ -22,6 +23,11 @@ class RegisterUserAPIView(CreateAPIView):
     serializer_class = RegisterUserSerializer
     permission_classes = [AllowAny]
 
+    # Оборачиваем в декоратор для отображения в документации.
+    # НА ЛОГИКУ РАБОТЫ НЕ ВЛИЯЕТ!!!
+    @swagger_auto_schema(responses={
+        201: RegisterUserResponseSerializer(many=True),  # Переопределение сериализатора для ответа по статусу 201
+    })
     def post(self, request, *args, **kwargs):
         # Добавляем RegisterUserSerializer
         serializer = RegisterUserSerializer(data=request.data)

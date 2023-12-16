@@ -24,6 +24,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
             email=self.validated_data['email'],
             first_name=self.validated_data.get('first_name') if self.validated_data.get('first_name') else "",
             last_name=self.validated_data.get('last_name') if self.validated_data.get('last_name') else "",
+            telegram_id=self.validated_data.get('telegram_id') if self.validated_data.get('telegram_id') else "",
         )
         # Проверяем на валидность пароль
         password = self.validated_data['password']
@@ -42,7 +43,23 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'password_again', 'first_name', 'last_name')
+        fields = ('email', 'password', 'password_again', 'first_name', 'last_name', 'telegram_id')
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+
+class RegisterUserResponseSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для формирования ответа RegisterUserSerializer
+    для формирования документации DRF YASG
+    """
+
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=50)
+    last_name = serializers.CharField(max_length=50)
+    telegram_id = serializers.CharField(max_length=10)
+
+    class Meta:
+        model = User
+        fields = ('email', 'first_name', 'last_name', 'telegram_id', )

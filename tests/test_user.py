@@ -44,7 +44,8 @@ class UserTest(APITestCase):
             {
                 'email': 'user_register_test@sky.pro',
                 'first_name': 'Test_first_name',
-                'last_name': 'Test_last_name'
+                'last_name': 'Test_last_name',
+                'telegram_id': None
             }
         )
 

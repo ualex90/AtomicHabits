@@ -51,6 +51,7 @@ class HabitGoodTest(APITestCase):
         data = {
             "task": "Test task good",
             "location": "Test location",
+            "start_time": "12:10"
         }
 
         response = self.client.post(
@@ -70,10 +71,10 @@ class HabitGoodTest(APITestCase):
             {
                 "id": response.json().get("id"),
                 "task": "Test task good",
-                "start_time": None,
+                "start_time": "12:10",
                 "location": "Test location",
                 "is_nice": False,
-                "periodicity": "1",
+                "periodicity": '1',
                 "reward": None,
                 "time_to_complete": 60,
                 "is_public": False,
@@ -113,6 +114,7 @@ class HabitGoodTest(APITestCase):
         self.client.force_authenticate(user=self.user_1)
 
         data = {
+            "start_time": "12:10",
             "task": "Test task good",
             "location": "Test location",
             "related_habit": self.nice_habit.id,
@@ -146,6 +148,7 @@ class HabitGoodTest(APITestCase):
         self.client.force_authenticate(user=self.user_1)
 
         data = {
+            "start_time": "12:10",
             "task": "Test task good",
             "location": "Test location",
             "related_habit": self.nice_habit.id,
@@ -187,6 +190,7 @@ class HabitGoodTest(APITestCase):
         )
 
         data = {
+            "start_time": "12:10",
             "task": "Test task good",
             "location": "Test location",
             "related_habit": good_habit.id,
@@ -228,6 +232,7 @@ class HabitGoodTest(APITestCase):
         )
 
         data = {
+            "start_time": "12:10",
             "task": "Test task good",
             "location": "Test location",
             "related_habit": good_habit.id,
