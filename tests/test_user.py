@@ -52,8 +52,6 @@ class UserTest(APITestCase):
         self.assertTrue(
             users_count1 == (users_count2 - 1)
         )
-        print("name = ", User.objects.get(email=data['email']).last_name)
-        print(response.json())
 
     def test_invalid_password_register(self):
         """
