@@ -13,7 +13,6 @@ from datetime import timedelta
 from pathlib import Path
 import environ
 
-
 # Set casting, default value in environment
 env = environ.Env(
     DEBUG=(bool, False),
@@ -52,6 +51,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_simplejwt',
     'drf_yasg',
+    'django_celery_beat',
 
     'app_users',
     'app_habits',
@@ -150,7 +150,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-       'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
@@ -159,3 +159,10 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=356),
 }
+
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # URL-адрес брокера сообщений
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # URL-адрес брокера результатов, также Redis
+CELERY_TIMEZONE = "Asia/Vladivostok"  # Часовой пояс для работы Celery
+CELERY_TASK_TRACK_STARTED = True  # Флаг отслеживания выполнения задач
+CELERY_TASK_TIME_LIMIT = 30 * 60  # Максимальное время на выполнение задачи
