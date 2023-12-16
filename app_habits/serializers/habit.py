@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from app_habits.models import Habit
-from app_users.models import User
 from validators.general_validators import FillingNotOutTwoFieldsValidator
 from app_habits.validators.habit import (
     TimeToCompleteValidator,
