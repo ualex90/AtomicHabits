@@ -13,6 +13,7 @@ from datetime import timedelta
 from pathlib import Path
 import environ
 
+
 # Set casting, default value in environment
 env = environ.Env(
     DEBUG=(bool, False),
@@ -122,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Vladivostok'
 
 USE_I18N = True
 
@@ -166,6 +167,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # URL-адрес броке�
 CELERY_TIMEZONE = "Asia/Vladivostok"  # Часовой пояс для работы Celery
 CELERY_TASK_TRACK_STARTED = True  # Флаг отслеживания выполнения задач
 CELERY_TASK_TIME_LIMIT = 30 * 60  # Максимальное время на выполнение задачи
+
 
 # Telegram settings
 TELEGRAM_BOT_TOKEN = env('TELEGRAM_BOT_TOKEN')
