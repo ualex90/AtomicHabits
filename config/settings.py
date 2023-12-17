@@ -13,7 +13,6 @@ from datetime import timedelta
 from pathlib import Path
 import environ
 
-
 # Set casting, default value in environment
 env = environ.Env(
     DEBUG=(bool, False),
@@ -53,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_yasg',
     'django_celery_beat',
+    'corsheaders',
 
     'app_users',
     'app_habits',
@@ -61,6 +61,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -168,6 +169,14 @@ CELERY_TIMEZONE = "Asia/Vladivostok"  # Часовой пояс для рабо�
 CELERY_TASK_TRACK_STARTED = True  # Флаг отслеживания выполнения задач
 CELERY_TASK_TIME_LIMIT = 30 * 60  # Максимальное время на выполнение задачи
 
-
 # Telegram settings
 TELEGRAM_BOT_TOKEN = env('TELEGRAM_BOT_TOKEN')
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "https://read-only.example.com",
+    "https://read-and-write.example.com",  # Добавить адреса для доступа из вне
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://read-and-write.example.com",  # Добавить адрес для возможности входа в админку
+]
