@@ -13,7 +13,6 @@ from datetime import timedelta
 from pathlib import Path
 import environ
 
-
 # Set casting, default value in environment
 env = environ.Env(
     DEBUG=(bool, False),
@@ -51,13 +50,18 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
+    'drf_yasg',
+    'django_celery_beat',
+    'corsheaders',
 
     'app_users',
+    'app_habits',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -118,9 +122,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Vladivostok'
 
 USE_I18N = True
 
@@ -148,7 +152,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-       'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
@@ -157,3 +161,22 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=356),
 }
+
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # URL-адрес брокера сообщений
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # URL-адрес брокера результатов, также Redis
+CELERY_TIMEZONE = "Asia/Vladivostok"  # Часовой пояс для работы Celery
+CELERY_TASK_TRACK_STARTED = True  # Флаг отслеживания выполнения задач
+CELERY_TASK_TIME_LIMIT = 30 * 60  # Максимальное время на выполнение задачи
+
+# Telegram settings
+TELEGRAM_BOT_TOKEN = env('TELEGRAM_BOT_TOKEN')
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "https://read-only.example.com",
+    "https://read-and-write.example.com",  # Добавить адреса для доступа из вне
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://read-and-write.example.com",  # Добавить адрес для возможности входа в админку
+]
