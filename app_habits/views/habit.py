@@ -1,4 +1,5 @@
 from django.db.models import QuerySet
+from django_celery_beat.models import PeriodicTask
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
@@ -149,6 +150,12 @@ class HabitUpdateAPIView(UpdateAPIView):
         if self.get_object().is_nice:
             return HabitNiceCreateSerializer
         return HabitGoodCreateSerializer
+
+    def perform_update(self, serializer):
+        serializer.save()
+        # obj = self.get_object()
+        # task = PeriodicTask.objects.get(name=f'{obj.id}: {obj.task}')
+        # print(task)
 
 
 class HabitDestroyAPIView(DestroyAPIView):

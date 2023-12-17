@@ -15,6 +15,7 @@ class PeriodicTaskTest(APITestCase):
         # Users
         self.user_1 = User.objects.create(
             email="user1@test.com",
+            telegram_id="123456789",
             is_staff=False,
             is_active=True,
         )
@@ -60,7 +61,7 @@ class PeriodicTaskTest(APITestCase):
         self.assertEquals(
             json.loads(task.kwargs),
             {
-                'telegram_id': None,
+                'telegram_id': "123456789",
                 'start_time': '12:10',
                 'task': 'Test task good',
                 'location': 'Test location',
@@ -76,7 +77,7 @@ class PeriodicTaskTest(APITestCase):
         """
 
         kwargs = {
-            'telegram_id': None,
+            'telegram_id': "123456789",
             'start_time': '12:10',
             'task': 'Test task good',
             'location': 'Test location',
@@ -125,7 +126,7 @@ class PeriodicTaskTest(APITestCase):
         self.assertEquals(
             json.loads(task.kwargs),
             {
-                'telegram_id': None,
+                'telegram_id': "123456789",
                 'start_time': '12:10',
                 'task': 'Test task good',
                 'location': 'Test location',
@@ -141,7 +142,7 @@ class PeriodicTaskTest(APITestCase):
         """
 
         kwargs = {
-            'telegram_id': None,
+            'telegram_id': "123456789",
             'start_time': '12:10',
             'task': 'Test task good',
             'location': 'Test location',
@@ -192,7 +193,7 @@ class PeriodicTaskTest(APITestCase):
         self.assertEquals(
             json.loads(task.kwargs),
             {
-                'telegram_id': None,
+                'telegram_id': "123456789",
                 'start_time': '12:10',
                 'task': 'Test task good',
                 'location': 'Test location',
@@ -212,7 +213,7 @@ class PeriodicTaskTest(APITestCase):
         """
 
         kwargs = {
-            'telegram_id': None,
+            'telegram_id': "123456789",
             'start_time': '12:10',
             'task': 'Test task good',
             'location': 'Test location',
