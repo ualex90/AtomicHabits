@@ -17,36 +17,62 @@
 
 <h3>Запуск проекта:<h3/>
 
-1. Клонируйте данный репозиторий
-2. Установите зависимости poetry:
+1. Клонируйте репозиторий;
+2. Создайте Telegram бота и получите его токен;
+3. Создайте в корне проекта и заполните файл .env:
+
+```
+DEBUG=on
+SECRET_KEY=
+
+DATABASE_NAME=atomic_habits
+DATABASE_USER=
+DATABASE_PASSWORD=
+
+TELEGRAM_BOT_TOKEN=
+```
+4. Установите зависимости poetry:
 
 ```bash
 poetry install
 ```
 
-3. Активируйте виртуальное окружение:
+5. Активируйте виртуальное окружение:
 
 ```bash
 poetry shell
 ```
 
-4. Примените миграции:
+6. Создайте новую базу данных с именем к примеру atomic_habits
+
+```bash
+psql
+# CREATE DATABASE atomic_habits;
+#\q
+```
+
+7. Примените миграции:
 
 ```bash
 python3 manage.py migrate
 ```
 
-5. В отдельном окне терминала запустите celery worker
+8. В отдельном окне терминала запустите celery worker
 
 ```bash
 celery -A config worker -l INFO
 ```
 
-6. В отдельном окне терминала запустите celery beat
+9. В отдельном окне терминала запустите celery beat
 
 ```bash
 celery -A config beat -l INFO -S django
 ```
+
+10. Для получения документации, запустите проект и при помощи браузера перейдите по адресу:
+<br/>
+<a>http://127.0.0.1:8000/swagger/<a/>
+<br/>
 
 Проект готов к заполнению базы данных.
 
