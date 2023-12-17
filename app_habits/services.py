@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 
 import requests
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
@@ -29,8 +29,9 @@ def add_task(habit: Habit):
     """ Создание периодической задачи для напоминания о полезной привычке """
 
     schedule, created = IntervalSchedule.objects.get_or_create(
-        every=10,
-        period=IntervalSchedule.SECONDS,
+        every=int(habit.periodicity),
+        # period=IntervalSchedule.MINUTES,  Для проверки работоспособности
+        period=IntervalSchedule.DAYS,
     )
 
     PeriodicTask.objects.create(
@@ -43,27 +44,46 @@ def add_task(habit: Habit):
                 'start_time': time.strftime(habit.start_time, '%H:%M'),
                 'task': habit.task,
                 'location': habit.location,
-                'reward': habit.reward,
                 'time_to_complete': habit.time_to_complete,
+                'reward': habit.reward,
+                'related_habit': {
+                    'task': habit.related_habit.task,
+                    'location': habit.related_habit.location,
+                    'time_to_complete': habit.related_habit.time_to_complete,
+                } if habit.related_habit else None,
             }, ensure_ascii=False
         ),
-        start_time=datetime.combine(date.today(), habit.start_time),
+        # Отправляем напоминание за 5 минут до начала действия
+        start_time=datetime.combine(date.today(), habit.start_time) - timedelta(minutes=5),
     )
 
 
-def send_message_to_telegram(*args, **kwargs):
+def send_message_to_telegram(**kwargs):
+    """ Отправка сообщения """
+
     chat_id = kwargs.get('telegram_id')
     start_time = kwargs.get("start_time")
     task = kwargs.get("task")
     location = kwargs.get("location")
     time_to_complete = kwargs.get("time_to_complete")
+    reward = kwargs.get("reward")
+    related_habit = kwargs.get("related_habit")
 
+    # Формирование основного текста
     text = (
-        f'Привыкаем выполнять:\n'
-        f'Время - {start_time}\n'
-        f'Место - {location}\n'
-        f'Задача - {task}\n'
-        f'Время на выполнение - {time_to_complete} секунд'
+        f'Я буду {task} в {start_time} {location} '
+        f'в течении {time_to_complete} секунд.'
     )
+    # Формирование текста вознаграждения при наличии
+    reward = f'\nЗа это, я {reward}.' if reward else ''
+    # Формирование текста связанной привычки при наличии
+    related_habit = (f'\nПосле этого я {related_habit.get("task")}'
+                     f' {related_habit.get("location")} '
+                     f'в течении {related_habit.get("time_to_complete")} секунд.') if related_habit else ''
+    # Отправка сообщения
     tg_bot = TgBot(chat_id)
-    tg_bot.send_message(text)
+    message = text + reward + related_habit
+    tg_bot.send_message(message)
+
+    # Для тестирования добавляем возврат сформированного сообщения
+    return message

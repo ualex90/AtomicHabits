@@ -425,7 +425,7 @@ class HabitTest(APITestCase):
         count_habit_1 = Habit.objects.all().count()
 
         # Изменяем привычку
-        response = self.client.delete(
+        self.client.delete(
             reverse("app_habits:habit_destroy", kwargs={'pk': habit.id})
         )
 

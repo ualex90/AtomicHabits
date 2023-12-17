@@ -310,11 +310,6 @@ class HabitGoodTest(APITestCase):
             owner=self.user_1
         )
 
-        data = {
-            "task": "Test task good",
-            "location": "Test location",
-        }
-
         response = self.client.patch(
             reverse("app_habits:habit_update", kwargs={'pk': good_habit.id}),
             data={
@@ -340,11 +335,6 @@ class HabitGoodTest(APITestCase):
             is_nice=False,
             owner=self.user_1
         )
-
-        data = {
-            "task": "Test task good",
-            "location": "Test location",
-        }
 
         # Аутентифицируем другого пользователя
         self.client.force_authenticate(user=self.user_2)

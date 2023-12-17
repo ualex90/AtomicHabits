@@ -25,7 +25,7 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Atomoc Habits",
       default_version='v1',
-      description="Приложение основанно на идее В Джеймса Клира написвшего "
+      description="Приложение основано на идее В Джеймса Клира написавшего "
                   "книгу «Атомные привычки», которая посвящена приобретению "
                   "новых полезных привычек и искоренению старых плохих привычек.",
       terms_of_service="https://www.google.com/policies/terms/",
