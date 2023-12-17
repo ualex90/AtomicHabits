@@ -16,6 +16,7 @@ class Command(BaseCommand):
             is_staff=True,
             is_superuser=True,
             is_active=True,
+            telegram_id='000000000'
         )
 
         user.set_password(password)
