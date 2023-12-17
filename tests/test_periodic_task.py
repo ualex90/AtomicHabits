@@ -234,3 +234,77 @@ class PeriodicTaskTest(APITestCase):
             'Я буду Test task good в 12:10 Test location в течении 60 секунд.\n'
             'После этого я Test nice habit Test location в течении 60 секунд.'
         )
+
+    def test_periodic_task_update(self):
+        """ Тестирование изменения """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        # Создаем полезную привычку
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "start_time": "12:10",
+            "time_to_complete": 110,
+        }
+
+        response_habit = self.client.post(
+            reverse("app_habits:habit_good_create"),
+            data=data
+        )
+
+        # Изменяем привычку
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': response_habit.json().get('id')}),
+            data={
+                "related_habit": self.nice_habit.id,
+            }
+        )
+
+        task = PeriodicTask.objects.get(name=f'{response.json().get("id")}: {data["task"]}')
+
+        self.assertEquals(
+            json.loads(task.kwargs),
+            {
+                'telegram_id': "123456789",
+                'start_time': '12:10',
+                'task': 'Test task good',
+                'location': 'Test location',
+                'time_to_complete': 110,
+                'reward': None,
+                'related_habit': {
+                    'task': 'Test nice habit',
+                    'location': 'Test location',
+                    'time_to_complete': 60
+                }
+            }
+        )
+
+    def test_periodic_task_delete(self):
+        """ Тестирование удаления задачи """
+
+        # Аутентифицируем обычного пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        # Создаем полезную привычку
+        data = {
+            "task": "Test task good",
+            "location": "Test location",
+            "start_time": "12:10",
+            "time_to_complete": 110,
+        }
+
+        response_habit = self.client.post(
+            reverse("app_habits:habit_good_create"),
+            data=data
+        )
+
+        count1 = PeriodicTask.objects.filter(name=f'{response_habit.json().get("id")}: {data["task"]}').count()
+
+        # Изменяем привычку
+        self.client.delete(
+            reverse("app_habits:habit_destroy", kwargs={'pk': response_habit.json().get('id')})
+        )
+
+        count2 = PeriodicTask.objects.filter(name=f'{response_habit.json().get("id")}: {data["task"]}').count()

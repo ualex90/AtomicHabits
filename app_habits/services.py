@@ -25,15 +25,24 @@ class TgBot:
         )
 
 
-def add_task(habit: Habit):
-    """ Создание периодической задачи для напоминания о полезной привычке """
+def get_schedule(habit: Habit):
+    """ Получение периода выполнения задачи """
 
     schedule, created = IntervalSchedule.objects.get_or_create(
         every=int(habit.periodicity),
         # period=IntervalSchedule.MINUTES,  Для проверки работоспособности
         period=IntervalSchedule.DAYS,
     )
+    return schedule
 
+
+def add_task(habit: Habit):
+    """ Создание периодической задачи для напоминания о полезной привычке """
+
+    # Создание или получение имеющегося периода
+    schedule = get_schedule(habit)
+
+    # Создание задачи
     PeriodicTask.objects.create(
         name=f'{habit.id}: {habit.task}',
         task='app_habits.tasks.send_message_tg',
@@ -56,6 +65,46 @@ def add_task(habit: Habit):
         # Отправляем напоминание за 5 минут до начала действия
         start_time=datetime.combine(date.today(), habit.start_time) - timedelta(minutes=5),
     )
+
+
+def update_task(habit: Habit):
+    """ Обновление периодической задачи """
+
+    # Ищем периодическую задачу и если она существует, изменяем ее
+    if task_qs := PeriodicTask.objects.filter(name=f'{habit.id}: {habit.task}'):
+        task = task_qs[0]
+        # Создание или получение имеющегося периода
+        schedule = get_schedule(habit)
+
+        # Изменение задачи
+        task.name = f'{habit.id}: {habit.task}'
+        task.interval = schedule
+        task.kwargs = json.dumps(
+            {
+                'telegram_id': habit.owner.telegram_id,
+                'start_time': time.strftime(habit.start_time, '%H:%M'),
+                'task': habit.task,
+                'location': habit.location,
+                'time_to_complete': habit.time_to_complete,
+                'reward': habit.reward,
+                'related_habit': {
+                    'task': habit.related_habit.task,
+                    'location': habit.related_habit.location,
+                    'time_to_complete': habit.related_habit.time_to_complete,
+                } if habit.related_habit else None,
+            }, ensure_ascii=False
+        )
+        task.start_time = datetime.combine(date.today(), habit.start_time) - timedelta(minutes=5)
+        task.save()
+
+
+def delete_task(habit: Habit):
+    """ Обновление периодической задачи """
+
+    # Ищем периодическую задачу и если она существует, удалим ее
+    if task_qs := PeriodicTask.objects.filter(name=f'{habit.id}: {habit.task}'):
+        task = task_qs[0]
+        task.delete()
 
 
 def send_message_to_telegram(**kwargs):

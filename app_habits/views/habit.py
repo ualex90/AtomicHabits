@@ -20,7 +20,7 @@ from app_habits.serializers.habit import (
     HabitListAllSerializer,
     HabitSerializer,
 )
-from app_habits.services import add_task
+from app_habits.services import add_task, update_task, delete_task
 from app_users.permissions import IsModerator, IsOwner, IsPublic
 
 
@@ -152,10 +152,9 @@ class HabitUpdateAPIView(UpdateAPIView):
         return HabitGoodCreateSerializer
 
     def perform_update(self, serializer):
-        serializer.save()
-        # obj = self.get_object()
-        # task = PeriodicTask.objects.get(name=f'{obj.id}: {obj.task}')
-        # print(task)
+        obj = serializer.save()
+        # Изменяем периодическую задачу если она существует
+        update_task(obj)
 
 
 class HabitDestroyAPIView(DestroyAPIView):
@@ -168,3 +167,12 @@ class HabitDestroyAPIView(DestroyAPIView):
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = [IsOwner]
+
+    def perform_destroy(self, instance):
+        # Удаляем периодическую задачу если она существует
+        delete_task(instance)
+        # Удаляем привычку
+        instance.delete()
+
+
+
