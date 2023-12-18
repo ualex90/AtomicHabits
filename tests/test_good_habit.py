@@ -296,6 +296,90 @@ class HabitGoodTest(APITestCase):
             }
         )
 
+    def test_reward_update(self):
+        """
+        Тестирование изменения поля reward
+        и установки в None поля related_habit
+        """
+
+        # Создаем полезную привычку
+        good_habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            related_habit=self.nice_habit,
+            owner=self.user_1
+        )
+
+        # Аутентифицируем другого пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': good_habit.id}),
+            data={
+                "reward": "TEST"
+            }
+        )
+
+        self.assertEquals(
+            response.json(),
+            {
+                'id': good_habit.id,
+                'task': 'Test good habit',
+                'start_time': None,
+                'location': 'Test location',
+                'is_nice': False,
+                'periodicity': '1',
+                'reward': 'TEST',
+                'time_to_complete': 60,
+                'is_public': False,
+                'owner': self.user_1.id,
+                'related_habit': None
+            }
+        )
+
+    def test_related_habit_update(self):
+        """
+        Тестирование изменения поля related_habit
+        и установки в None поля reward
+        """
+
+        # Создаем полезную привычку
+        good_habit = Habit.objects.create(
+            task="Test good habit",
+            location="Test location",
+            is_nice=False,
+            reward="Test reward",
+            owner=self.user_1
+        )
+
+        # Аутентифицируем другого пользователя
+        self.client.force_authenticate(user=self.user_1)
+
+        response = self.client.patch(
+            reverse("app_habits:habit_update", kwargs={'pk': good_habit.id}),
+            data={
+                "related_habit": self.nice_habit.id,
+            }
+        )
+
+        self.assertEquals(
+            response.json(),
+            {
+                'id': good_habit.id,
+                'task': 'Test good habit',
+                'start_time': None,
+                'location': 'Test location',
+                'is_nice': False,
+                'periodicity': '1',
+                'reward': None,
+                'time_to_complete': 60,
+                'is_public': False,
+                'owner': self.user_1.id,
+                'related_habit': self.nice_habit.id
+            }
+        )
+
     def test_permission_anonim_update(self):
         """
         Тестирование ограничение при изменении
