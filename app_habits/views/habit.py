@@ -1,5 +1,4 @@
 from django.db.models import QuerySet
-from django_celery_beat.models import PeriodicTask
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
@@ -18,7 +17,7 @@ from app_habits.serializers.habit import (
     HabitNiceCreateSerializer,
     HabitListSerializer,
     HabitListAllSerializer,
-    HabitSerializer,
+    HabitSerializer, HabitGoodUpdateSerializer,
 )
 from app_habits.services import add_task, update_task, delete_task
 from app_users.permissions import IsModerator, IsOwner, IsPublic
@@ -149,7 +148,7 @@ class HabitUpdateAPIView(UpdateAPIView):
     def get_serializer_class(self):
         if self.get_object().is_nice:
             return HabitNiceCreateSerializer
-        return HabitGoodCreateSerializer
+        return HabitGoodUpdateSerializer
 
     def perform_update(self, serializer):
         obj = serializer.save()
@@ -173,6 +172,3 @@ class HabitDestroyAPIView(DestroyAPIView):
         delete_task(instance)
         # Удаляем привычку
         instance.delete()
-
-
-
